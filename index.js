@@ -33,6 +33,11 @@ async function startServer() {
       const result = await cursor.toArray();
       res.send(result)
     })
+    app.post('/product',async(req,res)=>{
+      const newProduct=req.body;
+      const result=await productCollection.insertOne(newProduct);
+      res.send(result);
+    })
 
     app.get('/choose',async(req,res)=>{
       const cursor=whyChooseCollection.find();
