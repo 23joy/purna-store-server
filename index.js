@@ -22,11 +22,12 @@ const client = new MongoClient(
 
 async function startServer() {
   try {
-    await client.connect();
+    //await client.connect();
 
     const db = client.db('Products')
     const productCollection = db.collection('product')
     const whyChooseCollection=db.collection('choose')
+    const myBookingCollection=db.collection("mybooking")
 
     app.get('/product', async (req, res) => {
       const cursor = productCollection.find();
@@ -52,6 +53,25 @@ async function startServer() {
       res.send(product);
     })
 
+    //mybooking
+    app.post('/mybooking',async(req,res)=>{
+      const data=req.body;
+      const result=await myBookingCollection.insertOne(data)
+      res.send(result)
+    })
+
+    app.get('/mybooking/:userId',async(req,res)=>{
+      const userId=req.params.userId;
+      const result=await myBookingCollection.find({userId:userId}).toArray()
+      res.send(result)
+    })
+
+    app.delete('/mybooking/:bookingId',async(req,res)=>{
+      const bookingId=req.params.bookingId;
+      const result=await myBookingCollection.deleteOne({_id:new ObjectId(bookingId)})
+      res.send(result)
+    })
+
 
     app.get('/', (req, res) => {
       res.send('Hello World!')
@@ -61,7 +81,7 @@ async function startServer() {
       console.log(`Example app listening on port ${port}`)
     })
 
-    await client.db('admin').command({ ping: 1 });
+    //await client.db('admin').command({ ping: 1 });
     console.log('MongoDB Atlas connected successfully!');
 
   } finally {
